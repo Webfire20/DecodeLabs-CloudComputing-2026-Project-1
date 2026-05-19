@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#1a1a1a"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Caroline Dion — Design Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+
+    /* =============================================
+       DESIGN TOKENS — dark monochrome aesthetic
+    ============================================= */
+    :root {
+      --bg:        #1a1a1a;
+      --surface:   #222222;
+      --card:      #2a2a2a;
+      --border:    #333333;
+      --white:     #ffffff;
+      --muted:     #999999;
+      --label-col: #666666;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body:    'Outfit', sans-serif;
+      --font-mono:    'DM Mono', monospace;
+      /* Safe area insets for notched devices (iOS, Android) */
+      --safe-top:    env(safe-area-inset-top, 0px);
+      --safe-right:  env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left:   env(safe-area-inset-left, 0px);
+      /* Touch-friendly minimum target size */
+      --touch-min:   44px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Cross-platform smooth scroll — JS handles on unsupported browsers */
+    @supports (scroll-behavior: smooth) {
+      html { scroll-behavior: smooth; }
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--white);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      /* Prevent iOS rubber-banding artifacts */
+      -webkit-overflow-scrolling: touch;
+      /* Improve text rendering on all platforms */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, #2e2e2e 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: sticky;
+      /* Account for iOS status bar on notched devices */
+      top: 0;
+      padding-top: var(--safe-top);
+      z-index: 100;
+      /* Solid fallback for browsers without backdrop-filter (older Android) */
+      background: #1a1a1a;
+      background: rgba(26,26,26,0.96);
+      border-bottom: 1px solid var(--border);
+    }
+    @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+      nav {
+        background: rgba(26,26,26,0.92);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+      }
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 18px 40px;
+      /* Add side safe-area padding */
+      padding-left: max(40px, calc(40px + var(--safe-left)));
+      padding-right: max(40px, calc(40px + var(--safe-right)));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 48px;
+    }
+    .nav-inner::before {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 320px;
+    }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      transition: color 0.25s;
+      /* Minimum touch target height */
+      min-height: var(--touch-min);
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+    }
+    .nav-links a:hover,
+    .nav-links a:active,
+    .nav-links a.active { color: var(--white); }
+
+    /* ── Hamburger menu (mobile) ── */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: var(--touch-min);
+      height: var(--touch-min);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+      z-index: 200;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--white);
+      transition: transform 0.3s, opacity 0.3s;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── Mobile drawer ── */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: 0;
+      background: rgba(26,26,26,0.98);
+      z-index: 150;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding-top: calc(60px + var(--safe-top));
+      padding-bottom: var(--safe-bottom);
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 10vw, 4rem);
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 16px 40px;
+      min-height: var(--touch-min);
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-menu a:active { color: var(--white); }
+
+    /* ── Shared Layout ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      padding-left: max(40px, calc(40px + var(--safe-left)));
+      padding-right: max(40px, calc(40px + var(--safe-right)));
+      position: relative;
+      z-index: 1;
+    }
+    section { padding: 100px 0; }
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      position: relative; z-index: 1;
+    }
+    .slide-rule {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    .slide-dots { display: flex; gap: 8px; }
+    .slide-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .slide-rule-line { width: 180px; height: 1px; background: var(--border); }
+
+    /* ── Hero ── */
+    .hero {
+      /* Use dvh for dynamic viewport on mobile browsers where address bar shows/hides */
+      min-height: 95vh;
+      min-height: 95dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 80px 0 0;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 16vw, 13rem);
+      letter-spacing: 0.06em;
+      line-height: 0.92;
+      animation: heroReveal 1.2s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .hero-sub {
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 20px;
+      animation: heroReveal 1.2s 0.2s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    @keyframes heroReveal {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* Respect reduced motion preference (accessibility) */
+    @media (prefers-reduced-motion: reduce) {
+      .hero-title, .hero-sub { animation: none; }
+      .work-card { transition: none; }
+    }
+
+    /* ── Section typography ── */
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      letter-spacing: 0.06em;
+      line-height: 0.95;
+      margin-bottom: 28px;
+    }
+
+    /* ── About Me ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-avatar {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--card);
+      border: 2px solid var(--border);
+      overflow: hidden;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar-placeholder {
+      width: 100%; height: 100%; min-height: 300px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; color: var(--label-col);
+      font-family: var(--font-mono); font-size: 0.72rem; text-align: center; padding: 40px;
+    }
+    .avatar-placeholder .av-icon { font-size: 2.5rem; opacity: 0.25; }
+
+    .about-text {
+      font-size: 1rem; color: var(--muted); font-weight: 300; line-height: 1.85; max-width: 480px;
+    }
+    .about-stats {
+      display: flex; gap: 40px; margin-top: 36px; padding-top: 36px; border-top: 1px solid var(--border);
+    }
+    .stat-num { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; }
+    .stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 300; margin-top: 4px; letter-spacing: 0.06em; }
+
+    /* ── Work Experience ── */
+    .experience-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    }
+    .experience-image {
+      aspect-ratio: 4/3; border-radius: 4px; overflow: hidden;
+      background: var(--card); border: 1px solid var(--border);
+    }
+    .img-ph-large {
+      width: 100%; min-height: 260px; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 10px; color: var(--label-col);
+      font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em;
+    }
+    .exp-desc { font-size: 0.95rem; color: var(--muted); font-weight: 300; line-height: 1.9; margin-bottom: 36px; }
+    .exp-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .exp-tag {
+      padding: 10px 18px; border: 1px solid var(--border); border-radius: 3px;
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.1em; text-transform: uppercase; transition: border-color 0.2s, color 0.2s;
+      /* Ensure touch targets are large enough */
+      min-height: var(--touch-min);
+      display: inline-flex; align-items: center;
+    }
+    .exp-tag:hover,
+    .exp-tag:active { border-color: var(--white); color: var(--white); }
+
+    /* ── My Work Gallery ── */
+    .work-intro { text-align: center; padding: 100px 0 60px; }
+    .work-intro .section-heading { font-size: clamp(4rem, 10vw, 9rem); margin-bottom: 18px; }
+    .work-intro-sub { font-size: 0.95rem; color: var(--muted); font-weight: 300; max-width: 520px; margin: 0 auto; line-height: 1.8; }
+
+    .work-cat-label {
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 40px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .work-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 60px; }
+
+    .work-card {
+      background: var(--card); border: 1px solid var(--border); overflow: hidden;
+      border-radius: 4px; transition: border-color 0.3s, transform 0.3s;
+      /* Remove 300ms tap delay on mobile */
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* Hover only on non-touch / pointer devices */
+    @media (hover: hover) and (pointer: fine) {
+      .work-card:hover { border-color: #555; transform: translateY(-4px); }
+    }
+    /* Active state for touch devices */
+    .work-card:active { border-color: #555; }
+
+    .work-card-img { width: 100%; aspect-ratio: 1; overflow: hidden; position: relative; }
+    .work-card-img.wide { aspect-ratio: 16/9; }
+
+    .img-ph {
+      width: 100%; height: 100%; min-height: 160px;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px; color: var(--label-col);
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.06em; text-align: center; padding: 12px;
+      background: var(--card);
+    }
+    .img-ph-icon { font-size: 1.4rem; opacity: 0.2; }
+
+    .work-card-label {
+      padding: 14px 16px; font-weight: 700; font-size: 0.9rem;
+      color: var(--white); border-top: 1px solid var(--border);
+    }
+
+    /* Featured first project — full-width split layout */
+    .featured-project {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+      align-items: center; margin-bottom: 60px;
+    }
+    .featured-project-img {
+      background: #f5f0ea; aspect-ratio: 4/3; border-radius: 4px;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .featured-project-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5vw, 6rem); line-height: 0.95; letter-spacing: 0.04em;
+    }
+    .featured-project-meta {
+      font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 18px;
+    }
+
+    /* ── Closing / Thank You ── */
+    .closing {
+      min-height: 60vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; padding: 100px 0;
+    }
+    .closing-title {
+      font-family: var(--font-display); font-size: clamp(4rem,12vw,10rem); letter-spacing: 0.06em; margin-bottom: 20px;
+    }
+    .closing-sub { font-size: 0.9rem; color: var(--muted); font-weight: 300; letter-spacing: 0.06em; }
+    .contact-row { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
+    .contact-pill {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 24px; min-height: var(--touch-min);
+      border: 1px solid var(--border); border-radius: 3px; text-decoration: none;
+      color: var(--muted); font-family: var(--font-mono); font-size: 0.78rem;
+      letter-spacing: 0.08em; transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .contact-pill:hover,
+    .contact-pill:active { border-color: var(--white); color: var(--white); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px 40px;
+      /* Add bottom safe area for home indicator on iOS/Android */
+      padding-bottom: calc(24px + var(--safe-bottom));
+      padding-left: max(40px, calc(40px + var(--safe-left)));
+      padding-right: max(40px, calc(40px + var(--safe-right)));
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--font-mono); font-size: 0.72rem; color: var(--label-col);
+      z-index: 1; position: relative;
+    }
+    footer a { color: var(--label-col); text-decoration: none; }
+
+    /* ── Responsive: Tablet ── */
+    @media (max-width: 900px) {
+      .nav-inner { padding: 16px 24px; gap: 24px; }
+      .nav-links { gap: 24px; }
+      .container { padding: 0 24px; }
+      .about-grid { gap: 48px; }
+      .experience-layout { gap: 48px; }
+    }
+
+    /* ── Responsive: Large Mobile / Small Tablet ── */
+    @media (max-width: 768px) {
+      .nav-inner { padding: 14px 20px; gap: 16px; }
+      .nav-links { display: none; } /* replaced by hamburger */
+      .hamburger { display: flex; }
+      .container { padding: 0 20px; }
+      .about-grid, .experience-layout, .featured-project {
+        grid-template-columns: 1fr; gap: 40px;
+      }
+      .about-avatar { max-width: 260px; margin: 0 auto; }
+      .work-grid { grid-template-columns: repeat(2,1fr); gap: 14px; }
+      section { padding: 72px 0; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+    }
+
+    /* ── Responsive: Small Mobile ── */
+    @media (max-width: 480px) {
+      .nav-inner::before { display: none; }
+      .work-grid { grid-template-columns: 1fr; }
+      .about-stats { flex-direction: column; gap: 20px; }
+      .contact-row { flex-direction: column; align-items: center; }
+      .contact-pill { width: 100%; max-width: 300px; justify-content: center; }
+      section { padding: 56px 0; }
+      .slide-rule-line { width: 80px; }
+    }
+
+    /* ── High-DPI / Retina screens ── */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      .about-avatar, .work-card { border-width: 0.5px; }
+    }
+
+    /* ── Landscape orientation on small screens ── */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .hero { min-height: 100svh; padding-top: 60px; }
+      .hero-title { font-size: clamp(3rem, 10vh, 7rem); }
+      .mobile-menu { padding-top: calc(50px + var(--safe-top)); }
+      .mobile-menu a { font-size: clamp(1.6rem, 5vh, 2.5rem); padding: 10px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <div class="nav-inner">
+      <ul class="nav-links">
+        <li><a href="#cover" class="active">Home</a></li>
+        <li><a href="#about">About Me</a></li>
+         <li><a href="#experience">Work Experience</a></li>
+        <li><a href="#work">My Work</a></li>
+        
+      </ul>
+      <!-- Hamburger toggle (mobile only) -->
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile fullscreen menu -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Navigation menu">
+    <a href="#cover"      class="mobile-nav-link">Home</a>
+    <a href="#about"      class="mobile-nav-link">About Me</a>
+    <a href="#experience" class="mobile-nav-link">Work Experience</a>
+    <a href="#work"       class="mobile-nav-link">My Work</a>
+  </div>
+
+  <!-- COVER -->
+  <section id="cover" class="hero">
+    <div class="container">
+      <h1 class="hero-title">PORTFOLIO</h1>
+      <p class="hero-sub">Caroline Dion &nbsp;·&nbsp; Graphic Designer</p>
+    </div>
+    <div class="slide-rule container">
+      <div class="slide-dots"><span></span><span></span><span></span></div>
+      <div class="slide-rule-line"></div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ABOUT ME -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-avatar">
+          
+          <div class="avatar-placeholder">
+            
+           <img src="profile.jpg" alt="Caroline Dion" style="width:150%;height:150%;object-fit:cover">
+          </div>
+        </div>
+
+        <div>
+          <p class="section-eyebrow">// About Me</p>
+          <h2 class="section-heading">ABOUT<br/>ME</h2>
+          <p class="about-text">
+            Hello, my name is Caroline Dion. I am 20 years old and have a hobby of
+            creating designs. I am a designer with 3 years of experience as a logo
+            designer, Product Promo Designer, and YouTube Thumbnail creator.
+            I started my career in designing since I was 17 years old.
+          </p>
+          <div class="about-stats">
+            <div>
+              <div class="stat-num">3+</div>
+              <div class="stat-label">Years Experience</div>
+            </div>
+            <div>
+              <div class="stat-num">20+</div>
+              <div class="stat-label">Projects Completed</div>
+            </div>
+            <div>
+              <div class="stat-num">3</div>
+              <div class="stat-label">Design Disciplines</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-rule">
+        <div class="slide-dots"><span></span><span></span><span></span></div>
+        <div class="slide-rule-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- WORK EXPERIENCE -->
+  <section id="experience">
+    <div class="container">
+      <div class="experience-layout">
+
+        <div class="experience-image">
+          
+          <div class="img-ph-large">
+            <img src="experience.jpg" alt="Work Experience" style="width:100%;height:100%; object-fit:cover">
+          </div>
+        </div>
+
+        <div>
+          <p class="section-eyebrow">// Work Experience</p>
+          <h2 class="section-heading">WORK<br/>EXPERIENCE</h2>
+          <p class="exp-desc">
+            Worked with several companies in New York as a logo designer and poster designer,
+            producing animated videos and promotional design assets for brands across multiple
+            industries — from automotive finance to footwear branding and beauty lounges.
+          </p>
+          <div class="exp-tags">
+            <span class="exp-tag">Logo Design</span>
+            <span class="exp-tag">Poster Design</span>
+            <span class="exp-tag">Product Promo</span>
+            <span class="exp-tag">YouTube Thumbnails</span>
+            <span class="exp-tag">Animated Video</span>
+            <span class="exp-tag">Book Covers</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="slide-rule">
+        <div class="slide-dots"><span></span><span></span><span></span></div>
+        <div class="slide-rule-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- MY WORK -->
+  <section id="work">
+    <div class="container">
+
+      <div class="work-intro">
+        <p class="section-eyebrow">// My Work</p>
+        <h2 class="section-heading">MY WORK</h2>
+        <p class="work-intro-sub">
+          This is the result of my work as long as I explore the world of designing.
+        </p>
+      </div>
+
+      <!-- Featured First Project -->
+      <div class="work-cat-label">Featured Project — Logo Design</div>
+      <div class="featured-project">
+        <div class="featured-project-img">
+         
+          <div class="img-ph" style="background:#f5f0ea;color:#999;min-height:220px;">
+            <img src="logo-samis.jpg" alt="Sami's Atelier" style="width:150%;height:150%;object-fit:contain;padding:2px">
+          </div>
+        </div>
+        <div>
+          <p class="featured-project-meta">01 — Logo Design</p>
+          <h3 class="featured-project-title">MY FIRST<br/>PROJECT</h3>
+        </div>
+      </div>
+
+      <!-- Product Promos -->
+      <div class="work-cat-label">Product Promo Designs</div>
+      <div class="work-grid">
+
+        <div class="work-card">
+          <div class="work-card-img">
+            <!-- IMAGE:  -->
+            <img src="promo-perfume.jpg" alt="Perfume Promo" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div class="work-card-label">Product Promo</div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-img">
+            <!-- IMAGE:  -->
+            <div class="img-ph"><img src="promo-shoe-branding.jpg" alt="Shoe Branding Services" style="width:100%;height:100%;object-fit:cover"></div>
+          </div>
+          <div class="work-card-label">Product Promo</div>
+        </div>
+
+        <div class="work-card">
+          <div class="work-card-img">
+            <!-- IMAGE:  -->
+            <img src="promo-firebook.jpg" alt="Firebook Shoe Branding Packages" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div class="work-card-label">Product Promo</div>
+        </div>
+      </div>
+
+      <div class="slide-rule">
+        <div class="slide-dots"><span></span><span></span><span></span></div>
+        <div class="slide-rule-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- THANK YOU -->
+  <section class="closing">
+    <div class="container">
+      <h2 class="closing-title">THANK YOU</h2>
+      <p class="closing-sub">That's my portfolio so far.</p>
+      <div class="contact-row">
+        <!-- Update these links with your real contact details -->
+        <a href="mailto:your@email.com" class="contact-pill">✉ your@email.com</a>
+        <a href="https://linkedin.com/in/yourhandle" target="_blank" class="contact-pill">🔗 LinkedIn</a>
+        <a href="https://behance.net/yourhandle" target="_blank" class="contact-pill">🎨 Behance</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2025 Caroline Dion — Design Portfolio</span>
+    <span>Hosted on <a href="https://aws.amazon.com/s3/" target="_blank">AWS S3</a></span>
+  </footer>
+
+  <script>
+    /* ── Platform detection & polyfills ── */
+    (function() {
+      const ua = navigator.userAgent || '';
+      const isAndroid = /Android/i.test(ua);
+      const isIOS     = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isWindows = /Windows/i.test(ua);
+      const isMac     = /Macintosh/i.test(ua) && navigator.maxTouchPoints <= 1;
+
+      // Add platform class to <html> for CSS hooks if needed
+      const root = document.documentElement;
+      if (isAndroid) root.classList.add('platform-android');
+      if (isIOS)     root.classList.add('platform-ios');
+      if (isWindows) root.classList.add('platform-windows');
+      if (isMac)     root.classList.add('platform-mac');
+
+      // Polyfill smooth scroll for browsers that don't support it (older Android WebView)
+      if (!('scrollBehavior' in document.documentElement.style)) {
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+          anchor.addEventListener('click', function(e) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+              e.preventDefault();
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          });
+        });
+      }
+    })();
+
+    /* ── Hamburger / Mobile menu ── */
+    (function() {
+      const btn  = document.getElementById('hamburger');
+      const menu = document.getElementById('mobile-menu');
+      if (!btn || !menu) return;
+
+      function openMenu() {
+        menu.classList.add('open');
+        btn.classList.add('open');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.setAttribute('aria-label', 'Close navigation menu');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenu() {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Open navigation menu');
+        document.body.style.overflow = '';
+      }
+
+      btn.addEventListener('click', function() {
+        menu.classList.contains('open') ? closeMenu() : openMenu();
+      });
+
+      // Close when a link is tapped
+      menu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', closeMenu);
+      });
+
+      // Close on Escape key (keyboard / desktop users)
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && menu.classList.contains('open')) closeMenu();
+      });
+    })();
+
+    /* ── Active nav link on scroll ── */
+    (function() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-links a');
+
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            navLinks.forEach(function(a) {
+              a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+            });
+          }
+        });
+      }, { rootMargin: '-40% 0px -55% 0px' });
+
+      sections.forEach(function(s) { observer.observe(s); });
+    })();
+  </script>
+
+</body>
+</html>

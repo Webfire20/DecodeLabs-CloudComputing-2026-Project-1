@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 — Page Not Found</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #1a1a1a;
+      --white: #ffffff;
+      --muted: #666666;
+      --accent: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Floating particle canvas ── */
+    #particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Glitch effect on "404" ── */
+    .glitch-wrap {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .big-404 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(8rem, 26vw, 18rem);
+      line-height: 0.9;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      position: relative;
+      animation: floatY 4s ease-in-out infinite;
+      cursor: default;
+      user-select: none;
+    }
+
+    /* Glitch layers — pseudo-elements slide left/right with color splits */
+    .big-404::before,
+    .big-404::after {
+      content: '404';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      font-family: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+    }
+    .big-404::before {
+      color: #ff4466;
+      clip-path: polygon(0 10%, 100% 10%, 100% 40%, 0 40%);
+      animation: glitch-top 3s steps(2, end) infinite;
+      mix-blend-mode: screen;
+    }
+    .big-404::after {
+      color: #44ffcc;
+      clip-path: polygon(0 55%, 100% 55%, 100% 80%, 0 80%);
+      animation: glitch-bot 2.5s steps(2, end) infinite 0.4s;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes glitch-top {
+      0%   { transform: translate(0); opacity: 0; }
+      5%   { transform: translate(-4px, -2px); opacity: 1; }
+      10%  { transform: translate(4px, 0); opacity: 1; }
+      15%  { transform: translate(0); opacity: 0; }
+      100% { transform: translate(0); opacity: 0; }
+    }
+    @keyframes glitch-bot {
+      0%   { transform: translate(0); opacity: 0; }
+      7%   { transform: translate(5px, 1px); opacity: 1; }
+      12%  { transform: translate(-3px, 0); opacity: 1; }
+      17%  { transform: translate(0); opacity: 0; }
+      100% { transform: translate(0); opacity: 0; }
+    }
+    @keyframes floatY {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-18px); }
+    }
+
+    /* ── Subtitle ── */
+    .subtitle {
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: 12px;
+      animation: fadeUp 1s 0.3s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Message ── */
+    .message {
+      font-size: 0.95rem;
+      color: #555;
+      font-weight: 300;
+      margin-top: 28px;
+      max-width: 340px;
+      text-align: center;
+      line-height: 1.8;
+      animation: fadeUp 1s 0.5s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Home button ── */
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 40px;
+      padding: 14px 32px;
+      border: 1px solid #333;
+      border-radius: 3px;
+      text-decoration: none;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transition: border-color 0.25s, color 0.25s, transform 0.25s;
+      animation: fadeUp 1s 0.7s both;
+      position: relative;
+      z-index: 1;
+    }
+    .home-btn:hover {
+      border-color: var(--white);
+      color: var(--white);
+      transform: translateY(-3px);
+    }
+    .home-btn .arrow {
+      display: inline-block;
+      transition: transform 0.25s;
+    }
+    .home-btn:hover .arrow { transform: translateX(4px); }
+
+    /* ── Scanline overlay (retro CRT vibe) ── */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.07) 3px,
+        rgba(0,0,0,0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 2;
+      animation: scanMove 8s linear infinite;
+    }
+    @keyframes scanMove {
+      from { background-position: 0 0; }
+      to   { background-position: 0 100px; }
+    }
+
+    /* ── Divider lines (decorative, matching portfolio style) ── */
+    .deco-line {
+      position: fixed;
+      height: 1px;
+      background: #2a2a2a;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .deco-line.top    { top: 60px; left: 0; right: 0; }
+    .deco-line.bottom { bottom: 60px; left: 0; right: 0; }
+
+    /* ── Three dots (matching PDF footer dots) ── */
+    .dots {
+      position: fixed;
+      bottom: 32px;
+      left: 40px;
+      display: flex;
+      gap: 8px;
+      z-index: 1;
+    }
+    .dots span {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.3s; }
+    .dots span:nth-child(3) { animation-delay: 0.6s; }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.3); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Particle canvas -->
+  <canvas id="particles"></canvas>
+
+  <!-- Scanlines overlay -->
+  <div class="scanlines"></div>
+
+  <!-- Decorative lines from portfolio design -->
+  <div class="deco-line top"></div>
+  <div class="deco-line bottom"></div>
+
+  <!-- Three dots from PDF -->
+  <div class="dots">
+    <span></span><span></span><span></span>
+  </div>
+
+  <!-- Main content -->
+  <div class="glitch-wrap">
+    <div class="big-404">404</div>
+  </div>
+
+  <p class="subtitle">Page Not Found</p>
+
+  <p class="message">
+    Looks like this page wandered off into the void.
+    Let's get you back to the portfolio.
+  </p>
+
+  <a href="index.html" class="home-btn">
+    Back to Portfolio <span class="arrow">→</span>
+  </a>
+
+  <script>
+    /* ── Floating particle system ── */
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+
+    let W, H, particles;
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function makeParticle() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.6 + 0.4,         // radius 0.4 – 2px
+        vx: (Math.random() - 0.5) * 0.35,      // slow horizontal drift
+        vy: -Math.random() * 0.5 - 0.1,        // always drifting upward
+        alpha: Math.random() * 0.5 + 0.1,
+        fade: Math.random() * 0.003 + 0.001,   // how fast it fades out
+        life: 1.0
+      };
+    }
+
+    function initParticles() {
+      particles = Array.from({ length: 90 }, makeParticle);
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, W, H);
+      for (const p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.alpha * p.life})`;
+        ctx.fill();
+
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.life -= p.fade;
+
+        /* Reset particle when it fades out or drifts off-screen */
+        if (p.life <= 0 || p.y < -10 || p.x < -10 || p.x > W + 10) {
+          const fresh = makeParticle();
+          /* Respawn at the bottom or a random edge */
+          fresh.y = H + 5;
+          fresh.x = Math.random() * W;
+          Object.assign(p, fresh);
+        }
+      }
+      requestAnimationFrame(drawParticles);
+    }
+
+    window.addEventListener('resize', () => { resize(); initParticles(); });
+    resize();
+    initParticles();
+    drawParticles();
+
+    /* ── Easter egg: click the 404 to intensify the glitch ── */
+    document.querySelector('.big-404').addEventListener('click', function() {
+      this.style.animation = 'none';
+      this.style.transform = 'scale(1.04)';
+      this.style.transition = 'transform 0.1s';
+      setTimeout(() => {
+        this.style.transform = '';
+        this.style.animation = 'floatY 4s ease-in-out infinite';
+      }, 200);
+    });
+  </script>
+
+</body>
+</html>
